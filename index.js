@@ -55,6 +55,19 @@ app.post("/update", (req, res) => {
   }
 });
 
+app.post("/delete", (req, res) => {
+  if (req.body.id) {
+    Task.deleteOne({ _id: req.body.id }).exec((err, task) => {
+      if (err) {
+        return res.status(400).json({ error: "An error occurred" });
+      }
+      return res.json({ message: "Task has been deleted" });
+    });
+  } else {
+    return res.status(400).json({ error: "`id` is missing" });
+  }
+});
+
 app.listen(process.env.PORT || 3100, () => {
   console.log("Server started");
 });
