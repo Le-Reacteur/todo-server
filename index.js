@@ -8,7 +8,11 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const Task = mongoose.model("task", {
-  title: String
+  title: String,
+  isDone: {
+    type: Boolean,
+    default: false
+  }
 });
 
 mongoose.connect(
@@ -33,6 +37,22 @@ app.post("/create", (req, res) => {
     }
     return res.json(task);
   });
+});
+
+app.post("/update", (req, res) => {
+  if (req.body.id) {
+    Task.findById(req.body.id).exec((err, task) => {
+      if (err) {
+        return res.status(400).json({ error: "An error occurred" });
+      }
+      task.isDone = !task.isDone;
+      task.save(err => {
+        return res.json({ message: "Task has been updated" });
+      });
+    });
+  } else {
+    return res.status(400).json({ error: "`id` is missing" });
+  }
 });
 
 app.listen(process.env.PORT || 3100, () => {
